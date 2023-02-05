@@ -1,0 +1,200 @@
+---
+title: "Exercise_Laptop"
+author: "GANMENE TSAKOUE Stella Germaine"
+date: '2022-09-10'
+output:
+  word_document: default
+  pdf_document: default
+---
+
+**Import of the dataset and visualisation**
+
+```{r cars}
+prix_laptop = read.csv('C:/Users/stella/Desktop/Analyse_de_donnees_R/laptop_1.csv', sep = ";", header = TRUE)
+
+```
+
+
+
+
+
+```{r}
+head(prix_laptop)
+```
+
+
+
+
+
+
+```{r}
+summary(prix_laptop)
+```
+
+
+Structure of the dataset
+
+
+
+```{r}
+str(prix_laptop)
+```
+```{r}
+attach(prix_laptop)
+```
+
+
+
+
+
+For our first model, we consider that all variables are likely to explain the price of laptops
+
+
+
+
+
+```{r}
+modele1 = lm(ï..Price....~., data = prix_laptop)
+```
+
+
+
+
+We can conclude that all the variables explain 64% of the price of the laptops in the shop, but we can also see that the size of the screen, the number of USB ports and the capacity of the hard disk have very little influence on the price of the laptop.
+
+
+
+
+```{r}
+summary(modele1)
+```
+
+
+
+
+
+
+We can see that when the screen size is not considered as a parameter, the error decreases but the determination coefficient remains unchanged.
+
+
+
+
+
+```{r}
+modele2 = lm(ï..Price....~. -Screen.Size..in.., data = prix_laptop)
+```
+
+
+
+
+
+```{r}
+summary(modele2)
+```
+
+
+
+By deleting the hard disk storage parameter, there is a slight decrease in the determination coefficient but there is also a considerable decrease in the error, so this parameter does not really influence the price of the laptop.
+
+
+
+
+
+
+```{r}
+modele3 = lm(ï..Price....~. -Screen.Size..in..-Hard.drive..GB., data = prix_laptop)
+```
+
+
+
+
+```{r}
+summary(modele3)
+```
+
+
+
+
+The results of Model 4 return the same results as Model 3 by removing the number of USB ports
+
+
+
+
+
+```{r}
+modele4 = lm(ï..Price....~. -Screen.Size..in..-Hard.drive..GB.-USB.Ports, data = prix_laptop)
+```
+
+
+```{r}
+summary(modele4)
+```
+
+
+```{r}
+vif()
+```
+
+
+
+
+At this level we see that all the other remaining variables are significant in terms of P value, 
+
+At this level we can see that the error is considerably small and the three variables explain 62% of the laptop price.
+
+
+`
+
+
+
+
+
+
+
+
+
+
+
+The resifus curve follows the normal distribution, we can conclude that model 4 is a good model
+
+
+
+
+
+```{r}
+residus  = rstandard(modele4)
+hist(residus)
+```
+
+
+
+
+
+The durbinWatson test confirms this by giving us a P-value greater than 50%, so the hypotheses that have been put forward are 97% true
+
+
+
+
+
+```{r}
+library(car)
+durbinWatsonTest(modele4)
+```
+
+
+
+
+
+Finally, we have the linear egression line explaining the evolution of the explanatory variables as a function of the price of computers (Laptop)
+
+
+
+
+
+```{r}
+plot(ï..Price....~Brand+Weight..oz..+RAM.Memory..GB., pch = 20, xlim = c(0,6))
+abline(modele4, col = "red", lwd = 5)
+```
+
+**Conclusion :   **
+In sum, we can say that in the data set that has been made available to us, it appears that the price of the computers (lAptop) strongly depends on the brand of the computer, the weight and the RAM (GB)

@@ -1,0 +1,219 @@
+---
+title: "Continuous monitoring"
+author: "GANMENE TSAKOUE Stella Germaine"
+date: "2022-09-29"
+output: html_document
+---
+
+```{r}
+voiture = read.table('voitures.txt', col.names = c('cylindre', 'vmoteur', 'puiss', 'poids', 'accelera'))
+View(voiture)
+```
+
+
+
+```{r}
+#2-information on the dataset
+dim(voiture)
+
+summary(voiture)
+```
+
+#checking for duplicates and missing data
+
+```{r}
+sum(is.na(voiture))
+which(duplicated(voiture))
+```
+#change the type of the cylinder variable which is a category variable
+```{r}
+voiture$cylindre = factor(voiture$cylindre)
+summary(voiture)
+```
+
+#viewing variables individually
+```{r}
+library(ggplot2)
+ggplot(voiture)+aes(x= cylindre, color = 'red') +geom_bar()+geom_text(aes(label= after_stat(count)), stat = 'count', position = position_stack(.5))+xlab('cylindre')+ylab('effectifs')+ labs(fill = 'pratique')
+```
+```{r}
+library(ggplot2)
+ggplot(voiture)+aes(x=vmoteur, colour = factor(cylindre))+geom_boxplot(aes(fill=vmoteur))
+```
+```{r}
+library(ggplot2)
+ggplot(voiture)+aes(x=puiss, colour = factor(cylindre))+geom_boxplot(aes(fill=puiss))
+```
+
+```{r}
+library(ggplot2)
+ggplot(voiture)+aes(x=poids, colour = factor(cylindre))+geom_boxplot(aes(fill=puiss))
+
+```
+```{r}
+boxplot(voiture$puiss)
+boxplot(voiture$accelera)
+boxplot(voiture$vmoteur)
+boxplot(voiture$poids)
+boxplot(voiture$cylindre)
+```
+
+#bivariate exploratory analysis
+correlation coefficient
+
+```{r}
+library(corrr)
+cor(voiture$puiss, voiture$accelera)
+```
+```{r}
+library(corrr)
+cor(voiture$vmoteur, voiture$accelera)
+```
+
+```{r}
+library(corrr)
+cor(voiture$poids, voiture$accelera)
+```
+
+```{r}
+ggplot(voiture, aes(x = puiss, y = accelera, colour = factor(cylindre)))+ 
+  geom_boxplot()+ggtitle('Acceleration fonction des piuissance du vehicule par type de cylindre')
+```
+```{r}
+ggplot(voiture, aes(x = poids, y = accelera, colour = factor(cylindre)))+ 
+  geom_boxplot()+ggtitle('Acceleration fonction du poids du vehicule par type de cylindre')
+```
+```{r}
+ggplot(voiture, aes(x = vmoteur, y = accelera, colour = factor(cylindre)))+ 
+  geom_boxplot()+ggtitle('Acceleration fonction du volume du moteur par type de cylindre')
+```
+
+```{r}
+ggplot(voiture, aes(x = puiss, y = accelera, colour = factor(cylindre)))+ 
+  geom_point()
+```
+```{r}
+ggplot(voiture, aes(x = poids, y = accelera, colour = factor(cylindre)))+ 
+  geom_point()
+```
+```{r}
+ggplot(voiture, aes(x = vmoteur, y = accelera, colour = factor(cylindre)))+ 
+  geom_point()
+```
+```{r}
+ggplot(voiture, aes(x=puiss, y=accelera, color=factor(cylindre), shape=factor(cylindre))) +
+  geom_point() + 
+  geom_smooth(method=lm)+ggtitle('evolution de acceleration fonction de la puissance par type de cylindre')
+```
+```{r}
+ggplot(voiture, aes(x=poids, y=accelera, color=factor(cylindre), shape=factor(cylindre))) +
+  geom_point() + 
+  geom_smooth(method=lm)+ggtitle('evolution de acceleration fonction du poids par type de cylindre')
+```
+```{r}
+ggplot(voiture, aes(x=vmoteur, y=accelera, color=factor(cylindre), shape=factor(cylindre))) +
+  geom_point() + 
+  geom_smooth(method=lm)+ggtitle('evolution de acceleration fonction du volume du moteur par type de cylindre')
+```
+
+```{r}
+data.a <- subset(voiture,voiture$cylindre=="3")
+data.b <- subset(voiture,voiture$cylindre=="4")
+data.c <- subset(voiture,voiture$cylindre=="5")
+data.d <- subset(voiture,voiture$cylindre=="6")
+data.e <- subset(voiture,voiture$cylindre=="8")
+```
+
+
+```{r}
+cor(data.a$vmoteur, data.a$accelera )
+```
+```{r}
+cor(data.b$poids, data.b$accelera )
+```
+
+```{r}
+cor(data.c$poids, data.c$accelera )
+```
+```{r}
+cor(data.d$poids, data.d$accelera )
+```
+
+```{r}
+cor(data.e$poids, data.e$accelera )
+```
+
+#correlation entre les variables explicatives
+```{r}
+voiture1 = voiture[c('vmoteur', 'puiss', 'poids', 'accelera')]
+```
+
+
+```{r}
+co  =cor(voiture1)
+co
+```
+##construction of the model
+# model 1
+```{r}
+reg1  = lm(accelera~poids, data = data.d)
+summary(reg1)
+```
+
+#validation of the model
+
+1-homoscedasciticitis
+
+```{r}
+```
+
+
+```{r}
+library(car)
+ncvTest(reg1)
+```
+
+```{r}
+
+plot(reg1)
+```
+
+
+
+
+
+
+```{r}
+#residue independence
+durbinWatsonTest (reg1)
+```
+```{r}
+shapiro.test(residuals(reg1))
+```
+###SECOND MODEL
+```{r}
+reg2  = lm(accelera~poids+puiss, data = data.d)
+summary(reg2)
+```
+##homoscedasticity
+```{r}
+ncvTest(reg2)
+```
+```{r}
+ncvTest(reg2)
+```
+```{r}
+
+plot(reg2)
+```
+```{r}
+#residue independence
+durbinWatsonTest (reg2)
+```
+
+
+```{r}
+shapiro.test(residuals(reg2))
+```
+```
+

@@ -1,0 +1,225 @@
+---
+title: 'Qualite du vin '
+author: "GANMENE TSAKOUE Stella Germaine"
+date: "2022-10-06"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+rouge = read.csv('C:/Users/stella/Desktop/Analyse_de_donnees_R/winequality-red.csv', sep = ";")
+View(rouge)
+```
+
+```{r}
+dim(rouge)
+```
+
+
+```{r}
+summary(rouge)
+```
+
+
+## Task I##
+
+
+```{r}
+sum(is.na(rouge))
+```
+
+```{r}
+which(duplicated(rouge))
+```
+```{r}
+library(dplyr)
+rouge1  = distinct(rouge)
+```
+
+```{r}
+dim(rouge1)
+```
+```{r}
+which(duplicated(rouge1))
+```
+
+```{r}
+rouge$quality = factor(rouge$quality)
+```
+
+```{r}
+summary(rouge)
+```
+```{r}
+attach(rouge1)
+```
+
+```{r}
+library(corrr)
+corr = cor(rouge1)
+corr
+```
+
+#Tache II: ACP
+
+```{r}
+library(MASS)
+#data(rouge1, package = "MASS")
+pca_out = prcomp(rouge1, scale.  =T)
+pca_out
+```
+
+```{r}
+rouge1_pc = pca_out$x
+rouge1_pc
+```
+```{r}
+dim(rouge1_pc)
+```
+```{r}
+summary(pca_out)
+```
+
+
+```{r}
+screeplot(pca_out, type ="l", main = "screenplot for wine data")
+abline(1,0,col = "red", lty = 2)
+```
+
+```{r}
+library(psych)
+sub = principal(rouge1_pc, nfactors  =12, rotate = "none")
+sub
+```
+
+
+
+
+
+
+
+#task 3: combine the two data sets
+```{r}
+blanc = read.csv('C:/Users/stella/Desktop/Analyse_de_donnees_R/winequality-white.csv', sep = ";")
+```
+
+```{r}
+dim(blanc)
+```
+```{r}
+which(duplicated(blanc))
+```
+```{r}
+sum(is.na(blanc))
+```
+```{r}
+library(dplyr)
+blanc1  = distinct(blanc)
+```
+
+```{r}
+dim(blanc1)
+```
+
+```{r}
+which(duplicated(blanc1))
+```
+
+
+```{r}
+blanc1['color'] = "W"
+
+rouge1['color'] = "R"
+#df = pd.concat([rouge1, blanc1])
+df =  rbind(rouge1, blanc1)
+df= df[sample(1:nrow(df)), ]
+View(df)
+```
+
+```{r}
+dim(df)
+```
+#2, positive impact on wine quality with data visualisation
+
+```{r}
+table(df$quality)
+```
+visualization of the variations of the wine quality according to each explanatory variable
+```{r}
+library(ggplot2)
+ggplot(df, aes(x = factor(quality), y = fixed.acidity, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = volatile.acidity, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = citric.acid, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = residual.sugar, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+``
+```{r}
+ggplot(df, aes(x = factor(quality), y = chlorides, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = free.sulfur.dioxide, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = total.sulfur.dioxide, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = density, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = pH, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = sulphates, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+```{r}
+ggplot(df, aes(x = factor(quality), y = alcohol, fill = color, colour = color)) + 
+  geom_bar(stat = "identity", position = "dodge")
+```
+```{r}
+ggplot(df, aes(x = factor(quality), y = alcohol, colour = factor(color)))+ 
+  geom_boxplot()
+```
+
+
+
+
+
+
+
+
